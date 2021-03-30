@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Todo
 #from models import Person
 
 app = Flask(__name__)
@@ -38,6 +38,25 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/get_todo', methods=['GET'])
+def get_todo():
+
+    response_msg = {
+        "msg" : "Todo List"
+    }
+
+    return jsonify(response_msg), 200
+
+@app.route('/add_todo', methods=['POST'])
+def add_todo():
+
+    request_body = request.get_json()
+    item = Todo(done=request_body["done"], label=request_body["label"])
+    db.session.add(item)
+    db.session.commit()
+
+    return jsonify("New Item added"), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
