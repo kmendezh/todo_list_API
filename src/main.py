@@ -30,24 +30,19 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
-
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
-
+# GET route
 @app.route('/get_todo', methods=['GET'])
 def get_todo():
 
-    response_msg = {
-        "msg" : "Todo List"
-    }
+    # get the todo list
+    todo = Todo.query.all()
 
-    return jsonify(response_msg), 200
+    # map the results and your list of people  inside of the all_people variable
+    todo_list = list(map(lambda x: x.serialize(), todo))
 
+    return jsonify(todo_list), 200
+
+# POST route
 @app.route('/add_todo', methods=['POST'])
 def add_todo():
 
@@ -56,7 +51,31 @@ def add_todo():
     db.session.add(item)
     db.session.commit()
 
-    return jsonify("New Item added"), 200
+    # get the todo list
+    todo = Todo.query.all()
+
+    # map the results and your list of people  inside of the all_people variable
+    todo_list = list(map(lambda x: x.serialize(), todo))
+
+    return jsonify(todo_list), 200
+
+# DELETE route
+@app.route('/delete_todo/<int:idx>', methods=['DELETE'])
+def delete_todo(idx):
+
+    item = Todo.query.get(idx)
+    if item is None:
+        raise APIException('Item not found', status_code=404)
+    db.session.delete(item)
+    db.session.commit()
+
+    # get the todo list
+    todo = Todo.query.all()
+
+    # map the results and your list of people  inside of the all_people variable
+    todo_list = list(map(lambda x: x.serialize(), todo))
+
+    return jsonify(todo_list), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

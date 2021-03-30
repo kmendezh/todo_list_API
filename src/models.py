@@ -20,7 +20,7 @@ class User(db.Model):
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    done = db.Column(db.String(10), unique=True, nullable=False)
+    done = db.Column(db.String(10), unique=False, nullable=False)
     label = db.Column(db.String(100), unique=False, nullable=False)
 
     def __repr__(self):
@@ -28,6 +28,7 @@ class Todo(db.Model):
 
     def serialize(self):
         return {
+            "id":self.id,
             "done": self.done,
             "label": self.label,
         }
